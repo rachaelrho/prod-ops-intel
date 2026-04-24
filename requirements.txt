@@ -1,1 +1,30 @@
-# Dependencies will be added as the project develops
+# Core dependencies for retrieval and evaluation
+
+# Vector database and embeddings
+faiss-cpu==1.8.0
+sentence-transformers==2.7.0
+openai==1.30.1
+
+# Hybrid search
+rank-bm25==0.2.2
+
+# Text processing and chunking
+langchain==0.2.1
+langchain-openai==0.1.7
+langchain-community==0.2.1
+tiktoken==0.7.0
+
+# Evaluation frameworks
+ragas==0.1.9
+deepeval==0.21.73
+
+# Data processing
+pandas==2.2.2
+numpy==1.26.4
+
+# Utilities
+python-dotenv==1.0.1
+tqdm==4.66.4
+
+# Development
+jupyter==1.0.0
