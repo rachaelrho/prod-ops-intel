@@ -1,0 +1,589 @@
+[
+  {
+    "id": "db_001",
+    "category": "database_lookup",
+    "difficulty": "easy",
+    "query": "What is the current stock level for Vitamin C Brightening Serum?",
+    "expected_sources": ["products table"],
+    "expected_data": {
+      "product_id": 5,
+      "stock_level": 63,
+      "restock_threshold": 100
+    },
+    "expected_decision": "Stock level is 63 units, which is below the restock threshold of 100. Recommend placing restock order.",
+    "reasoning": "Direct product lookup with inventory threshold check"
+  },
+  {
+    "id": "db_002",
+    "category": "database_lookup",
+    "difficulty": "easy",
+    "query": "How many orders has customer CUST_0058 placed?",
+    "expected_sources": ["customers table"],
+    "expected_data": {
+      "customer_id": 58,
+      "total_orders": 6,
+      "is_vip": true
+    },
+    "expected_decision": "Customer CUST_0058 has placed 6 orders. This qualifies as a VIP customer (5+ orders).",
+    "reasoning": "Customer history lookup with VIP status determination"
+  },
+  {
+    "id": "db_003",
+    "category": "database_lookup",
+    "difficulty": "medium",
+    "query": "Which products are currently below restock threshold?",
+    "expected_sources": ["products table"],
+    "expected_data": {
+      "products_needing_restock": [
+        "Vitamin C Brightening Serum",
+        "Exfoliating Gel Cleanser",
+        "Oil Cleanser",
+        "Hydrating Cream Cleanser"
+      ]
+    },
+    "expected_decision": "4 products need restocking. Priority order by stockout risk: Vitamin C Brightening Serum (63 units), Oil Cleanser (97 units), Exfoliating Gel Cleanser (94 units), Hydrating Cream Cleanser (102 units).",
+    "reasoning": "Aggregation query with needs_restock flag, sorted by urgency"
+  },
+  {
+    "id": "db_004",
+    "category": "database_lookup",
+    "difficulty": "easy",
+    "query": "What is the status of order 1002?",
+    "expected_sources": ["orders table"],
+    "expected_data": {
+      "order_id": 1002,
+      "status": "delivered",
+      "returned": true,
+      "delivery_date": "2025-03-31"
+    },
+    "expected_decision": "Order 1002 was delivered on 2025-03-31 and has been returned.",
+    "reasoning": "Order status lookup with return flag"
+  },
+  {
+    "id": "db_005",
+    "category": "database_lookup",
+    "difficulty": "medium",
+    "query": "What is the return rate for Retinol Night Serum?",
+    "expected_sources": ["orders table", "products table"],
+    "expected_data": {
+      "product_id": 7,
+      "total_orders": 120,
+      "returned_orders": 15,
+      "return_rate": 0.125
+    },
+    "expected_decision": "Retinol Night Serum has a 12.5% return rate (15 out of 120 orders), which is above the typical 10% baseline. This is expected for retinol products due to sensitivity reactions.",
+    "reasoning": "Aggregation with return rate calculation, contextualized against baseline"
+  },
+  {
+    "id": "db_006",
+    "category": "database_lookup",
+    "difficulty": "easy",
+    "query": "How many customers came from the influencer acquisition channel?",
+    "expected_sources": ["customers table"],
+    "expected_data": {
+      "channel": "influencer",
+      "customer_count": 78
+    },
+    "expected_decision": "78 customers acquired through influencer channel.",
+    "reasoning": "Simple aggregation by acquisition channel"
+  },
+  {
+    "id": "db_007",
+    "category": "database_lookup",
+    "difficulty": "medium",
+    "query": "What products did customer CUST_0095 purchase in their last order?",
+    "expected_sources": ["orders table", "customers table", "products table"],
+    "expected_data": {
+      "customer_id": 95,
+      "last_order_date": "recent",
+      "products": ["product_names"]
+    },
+    "expected_decision": "Customer CUST_0095's most recent order contained [product list]. Order placed on [date].",
+    "reasoning": "Multi-table join with date filtering for most recent order"
+  },
+  {
+    "id": "db_008",
+    "category": "database_lookup",
+    "difficulty": "medium",
+    "query": "How many subscription orders were placed in the last 30 days?",
+    "expected_sources": ["orders table"],
+    "expected_data": {
+      "time_window": "last_30_days",
+      "subscription_orders": "count"
+    },
+    "expected_decision": "[X] subscription orders in the last 30 days, representing [Y]% of total orders in that period.",
+    "reasoning": "Temporal filtering with subscription flag aggregation"
+  },
+  {
+    "id": "db_009",
+    "category": "database_lookup",
+    "difficulty": "hard",
+    "query": "Which customers have placed orders but never returned any products?",
+    "expected_sources": ["orders table", "customers table"],
+    "expected_data": {
+      "customers_with_orders": 400,
+      "customers_without_returns": 350
+    },
+    "expected_decision": "350 customers have order history with zero returns. These are high-value retention targets.",
+    "reasoning": "Complex aggregation with negative condition (no returns)"
+  },
+  {
+    "id": "db_010",
+    "category": "database_lookup",
+    "difficulty": "medium",
+    "query": "What is the average order value for VIP customers versus non-VIP customers?",
+    "expected_sources": ["orders table", "customers table"],
+    "expected_data": {
+      "vip_avg_order_value": 85.50,
+      "non_vip_avg_order_value": 62.30
+    },
+    "expected_decision": "VIP customers (5+ orders) have average order value of $85.50 compared to $62.30 for non-VIP customers. VIP customers spend 37% more per order.",
+    "reasoning": "Segmented aggregation with comparison analysis"
+  },
+  {
+    "id": "policy_001",
+    "category": "policy_sop",
+    "difficulty": "easy",
+    "query": "What is the standard return window for unopened products?",
+    "expected_sources": ["return_refund_policy.md"],
+    "expected_data": {
+      "return_window": 30,
+      "condition": "unopened"
+    },
+    "expected_decision": "Standard return window is 30 days for unopened products in original packaging.",
+    "reasoning": "Direct policy lookup from return policy section"
+  },
+  {
+    "id": "policy_002",
+    "category": "policy_sop",
+    "difficulty": "medium",
+    "query": "Customer wants to return an opened moisturizer after 25 days. What is the policy?",
+    "expected_sources": ["return_refund_policy.md"],
+    "expected_data": {
+      "opened_product_window": 30,
+      "days_elapsed": 25,
+      "product_type": "moisturizer"
+    },
+    "expected_decision": "Accept return. Opened products can be returned within 30 days. 25 days is within policy. Process refund minus original shipping cost per standard opened product return procedure.",
+    "reasoning": "Policy application with opened product clause and timeline check"
+  },
+  {
+    "id": "policy_003",
+    "category": "policy_sop",
+    "difficulty": "hard",
+    "query": "Customer wants to return an opened serum after 35 days. They are a VIP customer with 6 previous orders. What do we do?",
+    "expected_sources": ["return_refund_policy.md"],
+    "expected_data": {
+      "standard_window": 30,
+      "days_elapsed": 35,
+      "vip_status": true,
+      "vip_extension": "holiday_or_generous_interpretation"
+    },
+    "expected_decision": "Approve return with manager discretion. Customer is VIP (5+ orders), and 35 days is only 5 days beyond standard window. Apply generous interpretation per VIP policy. Offer store credit to retain customer.",
+    "reasoning": "Exception handling for VIP customers, requires policy cross-reference and judgment"
+  },
+  {
+    "id": "policy_004",
+    "category": "policy_sop",
+    "difficulty": "medium",
+    "query": "What refund threshold requires manager approval?",
+    "expected_sources": ["return_refund_policy.md"],
+    "expected_data": {
+      "auto_approve_threshold": 50,
+      "manager_approval_threshold": 200
+    },
+    "expected_decision": "Refunds under $50: auto-approve. Refunds $50-$200: manager approval required. Over $200: escalate to director.",
+    "reasoning": "Escalation threshold lookup from approval authority section"
+  },
+  {
+    "id": "policy_005",
+    "category": "policy_sop",
+    "difficulty": "hard",
+    "query": "Customer reports product arrived damaged. What are the steps to process this claim?",
+    "expected_sources": ["damaged_shipment_sop.md"],
+    "expected_data": {
+      "steps": [
+        "verify_order",
+        "request_photos",
+        "assess_damage_category",
+        "check_inventory",
+        "offer_resolution",
+        "file_carrier_claim"
+      ]
+    },
+    "expected_decision": "1) Verify order and delivery confirmation. 2) Request photos (unless VIP customer). 3) Assess damage category (A/B/C). 4) Check inventory for replacement availability. 5) Offer replacement (expedited, no charge) or refund. 6) File carrier claim if Category B or C and shipment value >$50. 7) Issue 10-15% discount code for inconvenience.",
+    "reasoning": "Multi-step SOP retrieval with decision tree navigation"
+  },
+  {
+    "id": "policy_006",
+    "category": "policy_sop",
+    "difficulty": "medium",
+    "query": "Do we ship to Canada? What is the cost and timeline?",
+    "expected_sources": ["shipping_policy.md"],
+    "expected_data": {
+      "canada_available": true,
+      "cost": 15.95,
+      "timeline": "7-10 business days",
+      "free_threshold": 100
+    },
+    "expected_decision": "Yes, we ship to Canada. Cost is $15.95 flat rate (free on orders $100+). Timeline is 7-10 business days. Customer is responsible for customs duties and taxes.",
+    "reasoning": "International shipping policy lookup with cost and timeline details"
+  },
+  {
+    "id": "policy_007",
+    "category": "policy_sop",
+    "difficulty": "easy",
+    "query": "What is our expedited shipping cost?",
+    "expected_sources": ["shipping_policy.md"],
+    "expected_data": {
+      "expedited_cost": 12.95,
+      "timeline": "2-3 business days"
+    },
+    "expected_decision": "Expedited shipping is $12.95 flat rate with 2-3 business day delivery. Orders placed before 2 PM ET ship same day.",
+    "reasoning": "Direct shipping policy lookup"
+  },
+  {
+    "id": "policy_008",
+    "category": "policy_sop",
+    "difficulty": "hard",
+    "query": "Customer received wrong item. They already opened it thinking it was correct. What do we offer?",
+    "expected_sources": ["damaged_shipment_sop.md"],
+    "expected_data": {
+      "error_type": "wrong_item_shipped",
+      "customer_opened": true,
+      "our_error": true
+    },
+    "expected_decision": "Since this is our error: 1) Ship correct item with expedited shipping at no charge. 2) Let customer keep wrong item even though opened (not worth return cost). 3) Issue 15% discount code. 4) Verify picking/packing notes to identify process breakdown.",
+    "reasoning": "Wrong item procedure with opened product complication, requires cross-reference"
+  },
+  {
+    "id": "policy_009",
+    "category": "policy_sop",
+    "difficulty": "medium",
+    "query": "What photo documentation is required for a damaged shipment claim?",
+    "expected_sources": ["damaged_shipment_sop.md"],
+    "expected_data": {
+      "photo_requirements": [
+        "damaged_product",
+        "inner_packaging",
+        "shipping_box_exterior",
+        "shipping_label"
+      ],
+      "vip_exception": true
+    },
+    "expected_decision": "Require photos of: 1) Damaged product, 2) Product packaging (inner), 3) Shipping box exterior, 4) Shipping label. Exception: VIP customers (5+ orders, no prior damage claims) can skip photo requirement.",
+    "reasoning": "Documentation requirement lookup with VIP exception handling"
+  },
+  {
+    "id": "policy_010",
+    "category": "policy_sop",
+    "difficulty": "hard",
+    "query": "Customer has filed 3 damage claims in the last 6 months. They are now reporting another damaged shipment. How do we handle this?",
+    "expected_sources": ["damaged_shipment_sop.md"],
+    "expected_data": {
+      "damage_claims": 3,
+      "time_window": "6 months",
+      "fraud_flag": "multiple_claims_threshold"
+    },
+    "expected_decision": "Red flag for potential fraud (>2 damage claims in 6 months). Do NOT accuse customer. Process current claim normally but: 1) Photo documentation mandatory, 2) Escalate to manager before proceeding, 3) Flag account for future monitoring, 4) If pattern continues, future damage claims require manager approval.",
+    "reasoning": "Fraud prevention procedure with escalation, balances customer service with risk management"
+  },
+  {
+    "id": "product_001",
+    "category": "product_knowledge",
+    "difficulty": "easy",
+    "query": "Which products contain retinol?",
+    "expected_sources": ["product_faq.md"],
+    "expected_data": {
+      "retinol_products": [
+        "Retinol Night Serum (0.5%)",
+        "Night Cream (0.1%)"
+      ]
+    },
+    "expected_decision": "Two products contain retinol: Retinol Night Serum (0.5% concentration) and Night Cream (0.1% concentration, lower for daily use).",
+    "reasoning": "Ingredient search across product catalog"
+  },
+  {
+    "id": "product_002",
+    "category": "product_knowledge",
+    "difficulty": "medium",
+    "query": "Can I use Vitamin C serum and Niacinamide serum together?",
+    "expected_sources": ["product_faq.md"],
+    "expected_data": {
+      "compatibility": true,
+      "old_myth": "used to be contraindicated",
+      "modern_formulation": "pH-stable"
+    },
+    "expected_decision": "Yes, you can use Vitamin C Brightening Serum and Niacinamide Serum together. Despite old information suggesting conflict, modern formulations are pH-stable. You can layer them or use at different times of day.",
+    "reasoning": "Product compatibility lookup with myth-busting context"
+  },
+  {
+    "id": "product_003",
+    "category": "product_knowledge",
+    "difficulty": "easy",
+    "query": "Which products are fragrance-free?",
+    "expected_sources": ["product_faq.md"],
+    "expected_data": {
+      "fragrance_free": [
+        "All serums except Peptide Firming Serum",
+        "Oil-Free Gel Moisturizer",
+        "Mineral Sunscreen SPF 50"
+      ]
+    },
+    "expected_decision": "Fragrance-free options: All serums (except Peptide Firming Serum which has light botanical scent), Oil-Free Gel Moisturizer, and Mineral Sunscreen SPF 50. Recommended routine for fragrance sensitivity: Any serum + Oil-Free Gel Moisturizer + Mineral Sunscreen.",
+    "reasoning": "Fragrance sensitivity filtering with routine recommendation"
+  },
+  {
+    "id": "product_004",
+    "category": "product_knowledge",
+    "difficulty": "hard",
+    "query": "Customer is pregnant and wants to know which products are safe to use.",
+    "expected_sources": ["product_faq.md"],
+    "expected_data": {
+      "not_safe": ["Retinol Night Serum", "Night Cream (contains retinol)"],
+      "safe_alternatives": [
+        "Vitamin C Brightening Serum",
+        "Peptide Firming Serum",
+        "Niacinamide Serum"
+      ]
+    },
+    "expected_decision": "Avoid: Retinol Night Serum and Night Cream (both contain retinol, not pregnancy-safe). Safe alternatives for anti-aging: Vitamin C Brightening Serum, Peptide Firming Serum, and Niacinamide Serum. All three are pregnancy-safe and effective for anti-aging.",
+    "reasoning": "Safety filtering with alternative recommendations, requires ingredient knowledge"
+  },
+  {
+    "id": "product_005",
+    "category": "product_knowledge",
+    "difficulty": "medium",
+    "query": "What's in the Starter Skincare Set?",
+    "expected_sources": ["product_faq.md"],
+    "expected_data": {
+      "contents": [
+        "Gentle Foaming Cleanser (50ml)",
+        "Hyaluronic Acid Serum (15ml)",
+        "Daily Hydrating Moisturizer (30ml)"
+      ],
+      "value": "$89 for $110 worth",
+      "missing": "No sunscreen included"
+    },
+    "expected_decision": "Starter Skincare Set contains: Gentle Foaming Cleanser (50ml), Hyaluronic Acid Serum (15ml), and Daily Hydrating Moisturizer (30ml). Priced at $89 (value of $110). Note: Does not include sunscreen - recommend adding separately for complete routine.",
+    "reasoning": "Product set composition with value proposition and gap identification"
+  },
+  {
+    "id": "product_006",
+    "category": "product_knowledge",
+    "difficulty": "medium",
+    "query": "Which cleanser should I recommend for oily, acne-prone skin?",
+    "expected_sources": ["product_faq.md"],
+    "expected_data": {
+      "recommendation": "Exfoliating Gel Cleanser",
+      "reason": "contains salicylic acid",
+      "alternative": "Gentle Foaming Cleanser"
+    },
+    "expected_decision": "Recommend Exfoliating Gel Cleanser for oily/acne-prone skin. It contains 2% salicylic acid which helps with oil control and acne. Alternative: Gentle Foaming Cleanser for normal/combo skin.",
+    "reasoning": "Personalized product recommendation based on skin type"
+  },
+  {
+    "id": "product_007",
+    "category": "product_knowledge",
+    "difficulty": "hard",
+    "query": "Customer says their Vitamin C serum turned brown. What do we tell them?",
+    "expected_sources": ["product_faq.md"],
+    "expected_data": {
+      "issue": "oxidation",
+      "slight_color_change": "still effective within 3 months",
+      "dark_brown": "offer replacement"
+    },
+    "expected_decision": "Vitamin C oxidation due to air/light exposure. If slight color change: Still effective but use within 3 months. If dark brown: Product has oxidized - offer replacement. Storage tip: Keep in cool, dark place; refrigeration extends shelf life. Vitamin C products have 6-month shelf life after opening.",
+    "reasoning": "Product quality issue troubleshooting with replacement criteria"
+  },
+  {
+    "id": "product_008",
+    "category": "product_knowledge",
+    "difficulty": "medium",
+    "query": "Can I use AHA/BHA Exfoliating Toner and Retinol Night Serum on the same night?",
+    "expected_sources": ["product_faq.md"],
+    "expected_data": {
+      "compatibility": "use with caution",
+      "initial_recommendation": "alternate nights",
+      "advanced_user": "can layer after 4-6 weeks tolerance"
+    },
+    "expected_decision": "Use with caution. Initial recommendation: Alternate nights (AHA/BHA one night, Retinol next night). High sensitivity risk when combined. Advanced users can layer both after 4-6 weeks of building retinol tolerance. Start slow to avoid over-exfoliation.",
+    "reasoning": "Product compatibility with usage frequency guidance and risk assessment"
+  },
+  {
+    "id": "product_009",
+    "category": "product_knowledge",
+    "difficulty": "easy",
+    "query": "Which sunscreen doesn't leave a white cast?",
+    "expected_sources": ["product_faq.md"],
+    "expected_data": {
+      "no_white_cast": "Tinted Sunscreen SPF 45",
+      "white_cast": "Mineral Sunscreen SPF 50"
+    },
+    "expected_decision": "Tinted Sunscreen SPF 45 has no white cast and is cosmetically elegant. Good for oily skin. Mineral Sunscreen SPF 50 has slight white cast and thicker texture but is best for sensitive/acne-prone skin (non-comedogenic).",
+    "reasoning": "Product differentiation based on cosmetic properties"
+  },
+  {
+    "id": "product_010",
+    "category": "product_knowledge",
+    "difficulty": "hard",
+    "query": "Customer reports severe irritation and burning from Retinol Night Serum. What do we recommend?",
+    "expected_sources": ["product_faq.md", "return_refund_policy.md"],
+    "expected_data": {
+      "reaction_type": "concerning (not expected retinization)",
+      "action": "discontinue immediately",
+      "alternative": "Night Cream (lower retinol %)"
+    },
+    "expected_decision": "1) Stop using product immediately. 2) This is severe irritation (not normal retinization period). Concentration may be too high. 3) Process full refund per Adverse Reaction policy. 4) Alternative recommendation: Night Cream (0.1% retinol, lower concentration) or switch to Peptide Firming Serum (retinol-free anti-aging). 5) Document product name, batch number, reaction type. 6) Flag for product quality review. 7) Customer success team will follow up within 48 hours.",
+    "reasoning": "Adverse reaction handling requiring product knowledge + policy cross-reference"
+  },
+  {
+    "id": "multi_001",
+    "category": "multi_source",
+    "difficulty": "hard",
+    "query": "Customer CUST_0058 wants to return Vitamin C Brightening Serum they purchased 28 days ago. It's opened and they say it turned brown. What do we do?",
+    "expected_sources": ["customers table", "orders table", "products table", "return_refund_policy.md", "product_faq.md"],
+    "expected_data": {
+      "customer_vip_status": true,
+      "days_since_purchase": 28,
+      "product_opened": true,
+      "product_issue": "oxidation"
+    },
+    "expected_decision": "Approve return with replacement option. 1) Customer CUST_0058 is VIP (6 orders). 2) 28 days is within 30-day return window. 3) Brown color indicates oxidation - valid product quality issue. 4) Offer: Full refund OR replacement with fresh batch (expedited shipping, no charge). 5) Remind customer of storage best practices (cool, dark place, refrigeration). 6) No need to flag product quality since oxidation is expected for Vitamin C.",
+    "reasoning": "Requires customer lookup (VIP status), timeline check (policy), product quality knowledge (oxidation), and synthesis into decision"
+  },
+  {
+    "id": "multi_002",
+    "category": "multi_source",
+    "difficulty": "hard",
+    "query": "We have 63 units of Vitamin C Brightening Serum in stock. Based on recent sales velocity, when should we restock?",
+    "expected_sources": ["products table", "orders table"],
+    "expected_data": {
+      "current_stock": 63,
+      "restock_threshold": 100,
+      "recent_sales_velocity": "calculated from orders",
+      "stockout_date_projection": "calculated"
+    },
+    "expected_decision": "Current stock (63 units) is below restock threshold (100 units). Based on [X] units sold per week over last 30 days, estimated stockout in [Y] weeks. Recommend placing restock order immediately to account for lead time and avoid stockout. Priority: High (bestseller product).",
+    "reasoning": "Combines inventory data with sales velocity calculation for predictive restocking"
+  },
+  {
+    "id": "multi_003",
+    "category": "multi_source",
+    "difficulty": "hard",
+    "query": "Customer in Canada wants to return a damaged Retinol Night Serum. The outer box was crushed but product seems intact. They don't want to pay return shipping. What do we offer?",
+    "expected_sources": ["shipping_policy.md", "damaged_shipment_sop.md", "products table"],
+    "expected_data": {
+      "location": "Canada (international)",
+      "damage_category": "Category A (minor damage)",
+      "product_intact": true,
+      "return_shipping_cost": "prohibitively expensive for international"
+    },
+    "expected_decision": "Category A damage (outer box damaged, product intact). For international orders, return shipping is prohibitively expensive. Offer: 1) Keep product + $10 store credit (standard Category A resolution), OR 2) Full refund without requiring return (not worth international return cost). Recommend Option 1 since product is usable. File carrier claim since international shipment and damage confirmed.",
+    "reasoning": "Synthesizes damage assessment (SOP), international shipping considerations (policy), and cost-benefit analysis"
+  },
+  {
+    "id": "multi_004",
+    "category": "multi_source",
+    "difficulty": "hard",
+    "query": "Customer wants to order the Anti-Aging Duo as a gift for someone who is pregnant. Is this safe?",
+    "expected_sources": ["product_faq.md"],
+    "expected_data": {
+      "anti_aging_duo_contents": [
+        "Vitamin C Brightening Serum",
+        "Retinol Night Serum"
+      ],
+      "retinol_pregnancy_safe": false
+    },
+    "expected_decision": "Anti-Aging Duo is NOT safe for pregnancy. The set contains Retinol Night Serum which is not pregnancy-safe. Alternative recommendation: Create custom duo with Vitamin C Brightening Serum + Peptide Firming Serum (both pregnancy-safe and effective for anti-aging). Can price match the bundle discount ($98) for custom pairing.",
+    "reasoning": "Requires product set knowledge, ingredient safety lookup, and alternative product recommendation"
+  },
+  {
+    "id": "multi_005",
+    "category": "multi_source",
+    "difficulty": "medium",
+    "query": "Customer CUST_0123 in Florida placed an order 3 days ago but hasn't received shipping confirmation. What's the status?",
+    "expected_sources": ["customers table", "orders table", "shipping_policy.md"],
+    "expected_data": {
+      "customer_location": "Florida",
+      "days_since_order": 3,
+      "standard_processing": "24 hours",
+      "high_volume_extension": "48-72 hours"
+    },
+    "expected_decision": "Check order status in system. 1) If order shipped: Provide tracking number, apologize for notification delay. 2) If order NOT shipped after 3 days: This exceeds standard 24-hour processing time (even with 48-72 hour high-volume extension). Investigate delay reason. Offer expedited shipping upgrade at no charge as apology. Notify customer with updated timeline.",
+    "reasoning": "Customer lookup, order timeline check against policy SLA, service recovery recommendation"
+  },
+  {
+    "id": "multi_006",
+    "category": "multi_source",
+    "difficulty": "hard",
+    "query": "How many units of Retinol Night Serum should we restock given its return rate?",
+    "expected_sources": ["products table", "orders table"],
+    "expected_data": {
+      "current_stock": 351,
+      "restock_threshold": 100,
+      "return_rate": 0.125,
+      "sales_velocity": "calculated",
+      "return_factor": "affects net inventory"
+    },
+    "expected_decision": "Current stock (351 units) is above restock threshold. Retinol Night Serum has 12.5% return rate. Based on [X] units/week sales velocity and accounting for 12.5% return rate, estimated stockout in [Y] weeks. No immediate restock needed, but monitor closely. Return rate is expected for retinol products (sensitivity reactions). Recommend restock when inventory drops below 150 units to maintain buffer.",
+    "reasoning": "Combines inventory levels, return rate analysis, and sales velocity with product-specific context"
+  },
+  {
+    "id": "multi_007",
+    "category": "multi_source",
+    "difficulty": "hard",
+    "query": "Customer in Austin, Texas says they ordered Hydrating Cream Cleanser but received Gentle Foaming Cleanser. They're on a subscription. What do we do?",
+    "expected_sources": ["customers table", "orders table", "products table", "damaged_shipment_sop.md", "shipping_policy.md"],
+    "expected_data": {
+      "customer_location": "Austin, TX",
+      "wrong_item": true,
+      "subscription_customer": true,
+      "our_error": true
+    },
+    "expected_decision": "Wrong item shipped (our error). 1) Ship correct item (Hydrating Cream Cleanser) with expedited shipping at no charge. 2) Customer can keep wrong item (not worth return cost). 3) Issue 15% discount code. 4) Since subscription customer: Review subscription settings to ensure future shipments have correct product. 5) Investigate picking/packing notes for this order to identify error source. 6) Flag for subscription accuracy review.",
+    "reasoning": "Wrong item procedure + subscription-specific handling + process improvement"
+  },
+  {
+    "id": "multi_008",
+    "category": "multi_source",
+    "difficulty": "medium",
+    "query": "VIP customer wants to know if Niacinamide Serum and AHA/BHA Exfoliating Toner can be used in the same routine, and if we have both in stock.",
+    "expected_sources": ["products table", "product_faq.md"],
+    "expected_data": {
+      "niacinamide_stock": 438,
+      "aha_bha_stock": "check products table",
+      "compatibility": true
+    },
+    "expected_decision": "Both products are in stock (Niacinamide Serum: 438 units, AHA/BHA Exfoliating Toner: [X] units). Yes, compatible to use together. Niacinamide Serum contains 10% Niacinamide + Zinc PCA. AHA/BHA Toner contains 7% Glycolic Acid, 2% Salicylic Acid, and 2% Niacinamide. Recommended usage: AHA/BHA Toner 2-3x/week in PM, Niacinamide Serum daily. Niacinamide helps reduce potential irritation from acids.",
+    "reasoning": "Inventory check + product compatibility + usage guidance synthesis"
+  },
+  {
+    "id": "multi_009",
+    "category": "multi_source",
+    "difficulty": "hard",
+    "query": "Customer filed damage claim 2 weeks ago for Peptide Firming Serum, received replacement, and is now filing another damage claim for different product. What's the protocol?",
+    "expected_sources": ["damaged_shipment_sop.md", "orders table", "customers table"],
+    "expected_data": {
+      "previous_damage_claims": 1,
+      "time_between_claims": "2 weeks",
+      "multiple_claims_flag": "requires monitoring"
+    },
+    "expected_decision": "This is the second damage claim in short time period. Not yet fraud threshold (>2 in 6 months), but monitor pattern. Process current claim normally: 1) Request photo documentation (mandatory, no VIP exception this time). 2) Verify damage category. 3) Offer standard resolution. 4) Flag account for future monitoring. 5) Note in system: '2 damage claims in 1 month - monitor for pattern.' 6) If third claim occurs within 6 months, escalate to manager per fraud prevention protocol.",
+    "reasoning": "Historical claim pattern analysis + fraud prevention + graduated response protocol"
+  },
+  {
+    "id": "multi_010",
+    "category": "multi_source",
+    "difficulty": "hard",
+    "query": "Customer wants expedited shipping to a PO Box for overnight delivery. Is this possible?",
+    "expected_sources": ["shipping_policy.md"],
+    "expected_data": {
+      "expedited_po_box": true,
+      "express_po_box": false,
+      "express_requires_signature": true
+    },
+    "expected_decision": "Cannot provide Express shipping (overnight) to PO Box. Express shipping requires signature delivery, which PO Boxes don't support. Alternative: Expedited shipping (2-3 business days) IS available to PO Boxes for $12.95. If customer needs overnight, they must provide a physical street address.",
+    "reasoning": "Cross-reference shipping policy constraints with customer request, provide alternatives"
+  }
+]
