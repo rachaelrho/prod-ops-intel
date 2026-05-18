@@ -585,5 +585,113 @@
     },
     "expected_decision": "Cannot provide Express shipping (overnight) to PO Box. Express shipping requires signature delivery, which PO Boxes don't support. Alternative: Expedited shipping (2-3 business days) IS available to PO Boxes for $12.95. If customer needs overnight, they must provide a physical street address.",
     "reasoning": "Cross-reference shipping policy constraints with customer request, provide alternatives"
+  },
+  {
+    "id": "complex_001",
+    "category": "policy_sop",
+    "difficulty": "medium",
+    "query": "VIP customer wants to return opened cleanser 32 days after delivery. They have 7 previous orders. What's the decision?",
+    "expected_sources": ["return_refund_policy.md"],
+    "expected_decision": "Approve return. Customer has 7 orders (VIP status = 5+ orders). VIP customers can get extended window up to 45 days at manager discretion even outside holiday period. 32 days is within this extended window. Opened product normally gets store credit only, but VIP policy allows full refund at manager discretion. Recommend: Approve full refund as VIP courtesy.",
+    "reasoning": "Requires synthesizing: VIP threshold (5+ orders), standard return window (30 days), VIP extended window (up to 45 days), opened product policy (store credit), and VIP flexibility provision (manager discretion for full refund)"
+  },
+  {
+    "id": "complex_002",
+    "category": "policy_sop",
+    "difficulty": "medium",
+    "query": "Customer in UK has $85 order. Do they qualify for free international shipping?",
+    "expected_sources": ["shipping_policy.md"],
+    "expected_decision": "No free shipping. UK shipping is $24.95 flat rate. Free shipping threshold for international is $100+. Customer needs to add $15 more to qualify for free shipping. Without free shipping, total would be $85 + $24.95 = $109.95. Suggest adding item to reach $100 threshold - saves shipping cost.",
+    "reasoning": "Requires combining: UK shipping cost ($24.95), international free shipping threshold ($100+), and cost-benefit calculation"
+  },
+  {
+    "id": "complex_003",
+    "category": "policy_sop",
+    "difficulty": "medium",
+    "query": "Customer received package with crushed outer box but product inside is fine. It's worth $45. What do we offer?",
+    "expected_sources": ["damaged_shipment_sop.md"],
+    "expected_decision": "Category A damage (outer box damaged, product intact). Standard resolution: Keep product + $10 store credit. For $45 product, 10% discount would be $4.50, but minimum compensation is $10 store credit. File carrier claim. VIP customers: Photo requirement can be waived. New customers: Photos required.",
+    "reasoning": "Requires synthesizing: damage category classification (Category A), compensation calculation (10% vs minimum $10), product value assessment, and VIP vs new customer photo requirements"
+  },
+  {
+    "id": "complex_004",
+    "category": "policy_sop",
+    "difficulty": "medium",
+    "query": "Subscription customer's order is 4 days late. Standard shipping was promised 5-7 days, today is day 11. What compensation?",
+    "expected_sources": ["shipping_policy.md"],
+    "expected_decision": "Order is 4 days past upper bound of promise (7 days). Domestic order >10 days triggers compensation: $10 store credit per policy. Since subscription customer, also check if this affects their next shipment timing. Provide tracking update, $10 store credit, and confirm next subscription shipment date isn't impacted.",
+    "reasoning": "Requires synthesizing: standard shipping timeline (5-7 days), delayed package timeline triggers (>10 days), compensation policy ($10 store credit), and subscription-specific considerations"
+  },
+  {
+    "id": "complex_005",
+    "category": "policy_sop",
+    "difficulty": "medium",
+    "query": "We're in peak holiday season (December 20). Customer wants to place order today for Christmas delivery with standard shipping. Is this possible?",
+    "expected_sources": ["shipping_policy.md"],
+    "expected_decision": "Not possible with standard shipping. Peak holiday season (Nov 15 - Jan 5) shows 3-4x normal volume. Standard shipping is 5-7 days normally, but carrier delays are common during holidays (+3-7 days). December 20 + 7 days standard + 3-7 days holiday delay = December 27-31 delivery. Recommend Express shipping (order by 2 PM ET for next-day) or Expedited shipping (2-3 business days + holiday buffer). Must set realistic expectations and communicate cutoff dates proactively.",
+    "reasoning": "Requires synthesizing: peak holiday dates (Nov 15 - Jan 5), standard shipping timeline, holiday delay expectations, express cutoff times (2 PM ET), and setting customer expectations"
+  },
+  {
+    "id": "complex_006",
+    "category": "policy_sop",
+    "difficulty": "hard",
+    "query": "VIP customer in Australia ordered $120 worth of products, received them 35 days ago. One product was opened and caused adverse reaction. They want full refund including shipping. What do we do?",
+    "expected_sources": ["return_refund_policy.md", "shipping_policy.md"],
+    "expected_decision": "Approve full refund including shipping. 1) VIP status (5+ orders) normally gets extended window to 45 days. 2) 35 days is within VIP extension. 3) Adverse reaction OVERRIDES all other restrictions - immediate full refund even for opened products. 4) Adverse reaction policy: No photo documentation required, expedited processing (24-48 hours). 5) International return: Customer normally pays return shipping, BUT adverse reaction exception means we waive this. Offer alternative: Keep product + full refund to avoid international customs hassle. 6) Flag product for quality review. 7) Document: product name, batch number, reaction type.",
+    "reasoning": "Requires synthesizing: VIP threshold, VIP extended window (45 days), adverse reaction override policy, international shipping costs/customs, return shipping responsibility, quality review protocol, and documentation requirements. Tests chunking across multiple policy sections."
+  },
+  {
+    "id": "complex_007",
+    "category": "policy_sop",
+    "difficulty": "hard",
+    "query": "Customer in Canada received damaged product. Package was crushed, product bottle broken and leaked. They paid $24.95 shipping. Do they pay return shipping for replacement?",
+    "expected_sources": ["damaged_shipment_sop.md", "shipping_policy.md"],
+    "expected_decision": "Category C damage (product damaged and unusable). No return required for international damaged shipments - cost prohibitive. Resolution: 1) Full refund OR replacement (customer choice). 2) We pay replacement shipping (expedited at no charge per wrong item/damage policy). 3) Customer doesn't pay return shipping - damaged product can be discarded. 4) Original shipping cost ($24.95) is refunded as part of full refund option. 5) 10% discount code for inconvenience. 6) File carrier claim (international + damage confirmed). 7) For Canada, customs clearance was already done, so replacement ships immediately without additional customer customs fees.",
+    "reasoning": "Requires synthesizing: damage category (Category C), international return cost considerations (prohibitive), damaged shipment policy (we pay shipping), original shipping refund rules, discount compensation, carrier claim process, and international customs implications. Spans damaged_shipment_sop and shipping_policy sections."
+  },
+  {
+    "id": "complex_008",
+    "category": "policy_sop",
+    "difficulty": "hard",
+    "query": "Domestic order was marked delivered 12 days ago but customer never received it. It's December. They're not VIP. What's the process?",
+    "expected_sources": ["shipping_policy.md"],
+    "expected_decision": "Qualifies as lost package. Timeline trigger: Domestic not delivered 10 days after expected date. Process: 1) Verify tracking shows 'delivered' but customer didn't receive (check with neighbors, mailroom, etc.). 2) File carrier claim immediately (we handle). 3) Don't wait for claim resolution - reship replacement immediately OR offer full refund (customer choice). 4) Priority flag: Ship replacement via expedited at no charge. 5) December timing: Peak holiday season, carrier delays common but 12 days past delivery confirmation indicates loss. 6) Document: order number, tracking number, date reported. 7) Not VIP, so standard photo documentation requirements apply if requesting reship.",
+    "reasoning": "Requires synthesizing: lost package timeline triggers (10 days), carrier claim process, immediate customer resolution (don't wait for claim), replacement shipping upgrade (expedited at no charge), holiday season context, non-VIP documentation requirements, and process documentation. Tests retrieval across shipping policy lost package and holiday sections."
+  },
+  {
+    "id": "complex_009",
+    "category": "policy_sop",
+    "difficulty": "hard",
+    "query": "Customer ordered with expedited shipping (2-3 days), but wants to change delivery address after we shipped. Package hasn't been delivered yet. They'll refuse delivery if it goes to wrong address and want us to reship to correct address. Who pays shipping costs?",
+    "expected_sources": ["shipping_policy.md"],
+    "expected_decision": "Cannot change address after shipment - carrier has package. Address change request after shipment: Customer must refuse delivery. Refused package process: 1) Package returns to us at no charge (carrier covers). 2) Once received, process refund minus original shipping cost ($12.95 expedited). 3) If customer wants reshipment to correct address: Customer pays shipping for new delivery ($12.95 expedited OR $5.95 standard if not time-sensitive). Cost breakdown: Customer pays $12.95 for refused package reshipment. Original $12.95 is non-refundable since package was shipped per customer's original request. If delay was our error (wrong address attempt): We upgrade to expedited at no charge. If customer provided wrong address: Standard processing applies, customer pays.",
+    "reasoning": "Requires synthesizing: address change policy (cannot change after shipment), refused package procedures, refund policy for refused packages (minus original shipping), reshipment cost responsibility, cost structure for expedited shipping, and error responsibility determination (our error vs customer error). Tests chunking across multiple shipping policy sections."
+  },
+  {
+    "id": "complex_010",
+    "category": "policy_sop",
+    "difficulty": "hard",
+    "query": "Customer has filed 3 damage claims in the last 5 months. They're now filing a 4th claim. They're a VIP customer with 8 orders. What's the protocol?",
+    "expected_sources": ["damaged_shipment_sop.md", "return_refund_policy.md"],
+    "expected_decision": "High return rate threshold triggered. 3 damage claims in 5 months exceeds monitoring threshold (>2 in 6 months). Protocol: 1) VIP status (8 orders) normally waives photo requirement, but with multiple damage claims, photo documentation is REQUIRED (no VIP exception). 2) Process current claim if photos provided and damage verified. 3) Flag account for fraud prevention review. 4) Manager review required before processing 4th claim. 5) If approved: Standard resolution applies (per damage category). 6) Account restriction: May restrict future claims to store credit only pending manager review. 7) If pattern continues (5th claim), escalate to director per fraud prevention protocol. 8) VIP status doesn't override fraud prevention measures.",
+    "reasoning": "Requires synthesizing: damage claim frequency thresholds (>2 in 6 months), VIP photo waiver policy vs fraud prevention override, multiple claims escalation protocol, manager approval requirements, account flagging procedures, and VIP privileges vs fraud prevention balance. Tests chunking across damaged_shipment_sop and return_refund_policy."
+  },
+  {
+    "id": "complex_011",
+    "category": "policy_sop",
+    "difficulty": "hard",
+    "query": "Subscription customer needs to update their address. Next shipment is in 2 days. New address is APO military address. Current address is residential. What do we need to check?",
+    "expected_sources": ["shipping_policy.md"],
+    "expected_decision": "Check timing and address restrictions: 1) Address updates must happen before next cycle process date. 2 days might be too close - verify if order already processing. 2) APO/FPO addresses: Timeline 10-20 business days (variable), USPS only, no expedited/express options available. 3) Subscription default shipping: Standard shipping (free for $50+ orders). APO addresses: Treated as domestic rate (no extra charge). 4) Cannot guarantee delivery timeframes for military routing. 5) Update address immediately if not yet processing. 6) If already processing: This shipment goes to old address, update takes effect next cycle. 7) Inform customer of extended APO timeline (10-20 days) and confirm they accept variable delivery. 8) Subscription shipping issues: If shipment fails to APO address, automatically reschedule next attempt in 7 days.",
+    "reasoning": "Requires synthesizing: subscription address update timing rules, APO/FPO shipping restrictions (10-20 days, USPS only, no express), subscription default shipping method, domestic rate treatment for military addresses, delivery guarantee limitations, order processing timing, and subscription shipment failure protocol. Tests chunking across subscription and APO sections of shipping policy."
+  },
+  {
+    "id": "complex_012",
+    "category": "policy_sop",
+    "difficulty": "hard",
+    "query": "VIP customer with 12 orders wants to return an opened $180 serum 42 days after delivery. It's currently December 10. They say they had adverse reaction 2 weeks ago. Product is in holiday extension period. Manager approval?",
+    "expected_sources": ["return_refund_policy.md"],
+    "expected_decision": "Approve full refund, no manager approval needed. Analysis: 1) VIP status confirmed (12 orders >> 5 threshold). 2) Order placed during holiday extension period (Nov 15 - Jan 15), so 45-day window applies instead of 30. 3) 42 days is within 45-day holiday extension. 4) Opened product normally gets store credit only. 5) $180 is under $200, so normally manager approval required ($50-$200 range). 6) HOWEVER: Adverse reaction reported overrides everything. Adverse reaction policy: immediate full refund even if opened, no manager approval needed regardless of amount, expedited processing (24-48 hours). 7) Document adverse reaction: product name, batch number, reaction type, timing (2 weeks ago). 8) Flag product for quality review. 9) No photo documentation required for adverse reactions. Result: Process full refund immediately without manager approval, flag for quality review.",
+    "reasoning": "Requires synthesizing: VIP order threshold (5+), holiday extension period dates (Nov 15 - Jan 15), holiday extended window (45 days vs 30), opened product policy (store credit), refund amount escalation thresholds ($50-$200 manager approval, >$200 director), adverse reaction override policy (bypasses all restrictions and approval thresholds), adverse reaction documentation requirements, quality review flagging, and photo requirement waiver. Tests chunking across multiple return_refund_policy sections including VIP, holiday, opened products, approval thresholds, and adverse reactions."
   }
 ]
