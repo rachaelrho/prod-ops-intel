@@ -151,3 +151,42 @@ Verify before considering results complete:
 - Accuracy appropriate for task difficulty (not all >95% or all <40%)
 - Failed cases manually reviewed
 - Findings are explainable and actionable
+
+## Committing Changes
+
+**Run experiments before committing test cases or documents:**
+
+1. Make changes (new test cases or documents)
+2. Run experiments to validate changes
+3. Analyze results - do they show expected improvement?
+4. If results validate: Commit the changes
+5. If results don't validate: Iterate (don't commit broken test cases)
+
+Rationale: Avoid polluting git history with test cases that don't work. Validate first, commit when proven.
+
+## Findings from Experiments
+
+### Well-Structured Documents and Chunking Strategy
+
+**Date:** May 2026
+**Corpus:** 4-5 operational policy documents with proper formatting (bullets, headers, tables, short paragraphs)
+
+**Finding:** Fixed-size and recursive chunking strategies produce nearly identical results.
+
+**Evidence:**
+- Chunk counts: Identical (22 chunks for 4 docs, 28 chunks for 5 docs)
+- Chunk token distribution: Within 1-2 tokens on average
+- Retrieval accuracy: Identical (92.9% = 92.9%)
+- Disagreement rate: 0 disagreements across 42 test cases
+
+**Why:** Well-structured markdown documents with clear section headers naturally create boundaries at ~400-500 tokens. Both strategies respect these natural breaks:
+- Fixed-size (512 tokens): Happens to break at section boundaries
+- Recursive: Explicitly breaks at markdown headers
+
+**Implication:** For well-structured operational documents, chunking strategy choice doesn't meaningfully affect retrieval performance. Focus optimization efforts on:
+- Embedding model selection
+- Query formulation
+- Reranking strategies
+- Test case quality
+
+**Limitation:** This finding applies specifically to structured business documentation. Less structured content (emails, chat transcripts, unformatted text) might show different behavior.
