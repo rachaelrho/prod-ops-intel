@@ -190,3 +190,29 @@ Rationale: Avoid polluting git history with test cases that don't work. Validate
 - Test case quality
 
 **Limitation:** This finding applies specifically to structured business documentation. Less structured content (emails, chat transcripts, unformatted text) might show different behavior.
+
+### Embedding Model Selection for Operational Documents
+
+**Date:** May 2026
+**Corpus:** 4 operational policy documents (22 chunks, recursive strategy)
+**Models tested:** OpenAI text-embedding-3-small (1536d, API) vs GTE-Large (1024d, self-hosted)
+
+**Finding:** OpenAI and GTE-Large embedding models produce identical retrieval performance despite different vector representations.
+
+**Evidence:**
+- Retrieval accuracy: Identical (92.9% = 92.9%)
+- Disagreement rate: 0 disagreements across 42 test cases
+- Document retrieval specifically: 100% accuracy for both (policy_sop, product_knowledge)
+- Failed cases: 3 failures due to missing database tables in corpus (expected, not embedding issue)
+
+**Why:** For well-structured operational documents, both modern embedding models capture semantic relationships accurately enough that retrieval results converge. The documents have clear topics and structured formatting, making semantic boundaries obvious to any competent embedding model.
+
+**Implication:** Embedding model choice for structured operational documents should prioritize non-accuracy factors. While embeddings differ mathematically (avg distance: 0.27 vs 0.92), retrieval performance is identical. Focus optimization on:
+- **Latency**: GTE-Large is 4.4x faster (108ms vs 472ms per query)
+- **Cost**: Self-hosted eliminates per-query costs at scale (FREE vs $0.0002/run)
+- **Privacy**: Local embeddings keep data on-premises
+- **Accuracy** is not a differentiator for this use case
+
+**Recommendation:** Use GTE-Large (self-hosted) for operational policy retrieval. Accuracy is equivalent, latency is better, and zero marginal cost enables unrestricted scaling.
+
+**Limitation:** This finding applies to operational policy documents with clear structure. Other domains (technical docs, unstructured content, highly specialized jargon) may show embedding model sensitivity.
