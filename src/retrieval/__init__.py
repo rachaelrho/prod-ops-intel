@@ -8,3 +8,14 @@ This module handles:
 - Hybrid search (BM25 + dense retrieval)
 - Reranking (optional)
 """
+
+from .retrieval_system import RetrievalSystem
+from .chunking import DocumentChunker
+from .embeddings import OpenAIEmbedder, SentenceTransformerEmbedder
+
+__all__ = [
+    'RetrievalSystem',
+    'DocumentChunker',
+    'OpenAIEmbedder',
+    'SentenceTransformerEmbedder',
+]
