@@ -10,11 +10,13 @@ This module handles:
 """
 
 from .retrieval_system import RetrievalSystem
+from .hybrid_search import HybridRetriever
 from .chunking import DocumentChunker
 from .embeddings import OpenAIEmbedder, SentenceTransformerEmbedder
 
 __all__ = [
     'RetrievalSystem',
+    'HybridRetriever',
     'DocumentChunker',
     'OpenAIEmbedder',
     'SentenceTransformerEmbedder',
