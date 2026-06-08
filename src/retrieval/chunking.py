@@ -14,8 +14,6 @@ from langchain_text_splitters import (
     RecursiveCharacterTextSplitter,
     CharacterTextSplitter,
 )
-from langchain_experimental.text_splitter import SemanticChunker
-from langchain_openai import OpenAIEmbeddings
 import tiktoken
 
 # Load environment variables
@@ -164,7 +162,10 @@ class DocumentChunker:
         Returns:
             List of dicts with chunk text, metadata
         """
-        # Initialize semantic chunker with OpenAI embeddings
+        # Lazy import — only needed for semantic strategy
+        from langchain_experimental.text_splitter import SemanticChunker
+        from langchain_openai import OpenAIEmbeddings
+
         embeddings = OpenAIEmbeddings(model="text-embedding-3-small")
 
         splitter = SemanticChunker(

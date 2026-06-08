@@ -14,7 +14,6 @@ import logging
 from pathlib import Path
 from typing import List, Dict, Any, Optional, Tuple
 import numpy as np
-import faiss
 
 from .chunking import DocumentChunker
 from .embeddings import SentenceTransformerEmbedder
@@ -64,7 +63,7 @@ class RetrievalSystem:
         # Storage
         self.chunks: List[Dict[str, Any]] = []
         self.embeddings: Optional[np.ndarray] = None
-        self.index: Optional[faiss.Index] = None
+        self.index = None  # faiss.Index, lazy-loaded in build_index()
 
         logger.info("✓ Retrieval system initialized")
 
@@ -158,6 +157,7 @@ class RetrievalSystem:
         if not self.chunks:
             raise ValueError("No documents ingested. Call ingest_document() first.")
 
+        import faiss  # must import after sentence-transformers model is loaded
         logger.info(f"Building index from {len(self.chunks)} chunks...")
 
         # Extract chunk texts
@@ -177,7 +177,7 @@ class RetrievalSystem:
         stats = self.embedder.get_stats()
         logger.info(f"✓ Index built: {len(self.chunks)} chunks, {dimension} dimensions")
         logger.info(f"  Embedding time: {stats['total_time']:.2f}s")
-        logger.info(f"  Avg time per chunk: {stats['avg_time']*1000:.1f}ms")
+        logger.info(f"  Avg time per chunk: {stats['avg_time_per_embed']*1000:.1f}ms")
 
     def search(
         self,
